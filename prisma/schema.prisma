@@ -34,6 +34,7 @@ model Employee {
   shifts       Shift[]
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
+  Job          Job[]
 }
 
 model Department {
@@ -111,4 +112,44 @@ model Shift {
   sbJobId    String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Job {
+  id               Int        @id @default(autoincrement())
+  jobName          String
+  jobNum           String?    @unique
+  sbId             String?    @unique
+  siteAddress      String?
+  customerName     Customer?  @relation(fields: [customerId], references: [id])
+  customerId       Int?
+  projectManager   Employee?  @relation(fields: [projectManagerId], references: [id])
+  projectManagerId Int?
+  active           Boolean    @default(true)
+  complete         Boolean    @default(false)
+  prevWage         Boolean    @default(false)
+  driveTime        Boolean    @default(false)
+  driveTimeType    DriveTime? @relation(fields: [driveTimeTypeId], references: [id])
+  driveTimeTypeId  Int?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  address   String
+  phone     String?
+  fax       String?
+  email     String?
+  jobs      Job[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DriveTime {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobs      Job[]
 }
