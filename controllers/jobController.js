@@ -99,17 +99,17 @@ const updateJob = async (req, res) => {
         // Filter out undefined fields from req.body
         const updateData = {};
         const allowedFields = [
-        'jobName',
-        'jobNum',
-        'sbId',
-        'siteAddress',
-        'customerId',
-        'projectManagerId',
-        'active',
-        'complete',
-        'prevWage',
-        'driveTime',
-        'driveTimeTypeId',
+            'jobName',
+            'jobNum',
+            'sbId',
+            'siteAddress',
+            'customerId',
+            'projectManagerId',
+            'active',
+            'complete',
+            'prevWage',
+            'driveTime',
+            'driveTimeTypeId',
         ];
 
         for (const field of allowedFields) {
