@@ -12,7 +12,7 @@ exports.createShift = async (req, res) => {
                 shiftDate: new Date(shiftDate),
                 jobNum,
                 comment,
-                hours: hours ? parseInt(hours) : null,
+                hours: hours ? parseFloat(hours) : null,
                 sbJobId
             },
             include: {
@@ -76,7 +76,7 @@ exports.updateShift = async (req, res) => {
                     ['jobNum', 'comment', 'hours', 'sbJobId'].includes(key)
                 )
                 .map(([key, value]) => 
-                    key === 'hours' ? [key, value ? parseInt(value) : null] : [key, value]
+                    key === 'hours' ? [key, value ? parseFloat(value) : null] : [key, value]
                 )
         );
 
