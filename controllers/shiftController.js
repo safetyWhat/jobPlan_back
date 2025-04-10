@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // Create a new shift
-exports.createShift = async (req, res) => {
+const createShift = async (req, res) => {
     try {
         const { employeeId, shiftDate, jobNum, comment, hours, sbJobId } = req.body;
 
@@ -27,7 +27,7 @@ exports.createShift = async (req, res) => {
 };
 
 // Get all shifts
-exports.getAllShifts = async (req, res) => {
+const getAllShifts = async (req, res) => {
     try {
         const shifts = await prisma.shift.findMany({
             include: {
@@ -41,7 +41,7 @@ exports.getAllShifts = async (req, res) => {
 };
 
 // Get shift by ID
-exports.getShiftById = async (req, res) => {
+const getShiftById = async (req, res) => {
     try {
         const { id } = req.params;
         const shift = await prisma.shift.findUnique({
@@ -64,7 +64,7 @@ exports.getShiftById = async (req, res) => {
 };
 
 // Update shift
-exports.updateShift = async (req, res) => {
+const updateShift = async (req, res) => {
     try {
         const { id } = req.params;
         
@@ -93,7 +93,7 @@ exports.updateShift = async (req, res) => {
 };
 
 // Delete shift
-exports.deleteShift = async (req, res) => {
+const deleteShift = async (req, res) => {
     try {
         const { id } = req.params;
         await prisma.shift.delete({
@@ -106,4 +106,12 @@ exports.deleteShift = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+};
+
+module.exports = {
+    createShift,
+    getAllShifts,
+    getShiftById,
+    updateShift,
+    deleteShift
 };
