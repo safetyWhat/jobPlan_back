@@ -9,13 +9,12 @@ const createJob = async (req, res) => {
         jobNum,
         sbId,
         siteAddress,
-        customerId,
-        projectManagerId,
+        //customerId,
+        //projectManagerId,
         active,
-        complete,
         prevWage,
-        driveTime,
-        driveTimeTypeId,
+        //driveTime,
+        //driveTimeTypeId,
         } = req.body;
 
         const newJob = await prisma.job.create({
@@ -24,13 +23,12 @@ const createJob = async (req, res) => {
             jobNum,
             sbId,
             siteAddress,
-            customerId,
-            projectManagerId,
+            //customerId,
+            //projectManagerId,
             active,
-            complete,
             prevWage,
-            driveTime,
-            driveTimeTypeId,
+            //driveTime,
+            //driveTimeTypeId,
         },
         });
 
