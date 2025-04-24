@@ -10,25 +10,30 @@ const createEmployee = async (req, res) => {
             sbId, 
             email, 
             phone, 
-            department, 
-            position, 
+            departmentId, 
+            positionId, 
             hiredAt, 
             wage 
         } = req.body;
 
-        const newEmployee = await prisma.employee.create({
-            data: {
+        // Filter out undefined fields and empty strings from req.body
+        const employeeData = Object.fromEntries(
+            Object.entries({
                 firstName,
                 lastName,
                 uapId,
                 sbId,
                 email,
                 phone,
-                department,
-                position,
+                departmentId,
+                positionId,
                 hiredAt,
                 wage
-            },
+            }).filter(([_, value]) => value !== undefined && value !== '')
+        );
+
+        const newEmployee = await prisma.employee.create({
+            data: employeeData,
         });
 
         res.status(201).json({ success: true, data: newEmployee });
