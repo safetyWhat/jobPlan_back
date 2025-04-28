@@ -113,28 +113,28 @@ model Shift {
   updatedAt  DateTime @updatedAt
 }
 
-enum DriveTimeType {
+enum DriveTime {
+  NONE
   STANDARD
   PLUS
 }
 
 model Job {
-  id               Int            @id @default(autoincrement())
+  id               Int        @id @default(autoincrement())
   jobName          String
-  jobNum           String?        @unique
-  sbId             String?        @unique
+  jobNum           String?    @unique
+  sbId             String?    @unique
   siteAddress      String?
-  customerName     Customer?      @relation(fields: [customerId], references: [id])
+  customerName     Customer?  @relation(fields: [customerId], references: [id])
   customerId       Int?
-  projectManager   Employee?      @relation(fields: [projectManagerId], references: [id])
+  projectManager   Employee?  @relation(fields: [projectManagerId], references: [id])
   projectManagerId Int?
-  active           Boolean        @default(true)
-  complete         Boolean        @default(false)
-  prevWage         Boolean        @default(false)
-  driveTime        Boolean        @default(false)
-  driveTimeType    DriveTimeType?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  active           Boolean    @default(true)
+  complete         Boolean    @default(false)
+  prevWage         Boolean    @default(false)
+  driveTime        DriveTime? @default(NONE)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
 
 model Customer {
