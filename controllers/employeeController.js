@@ -143,10 +143,79 @@ const deleteEmployee = async (req, res) => {
     }
 };
 
+// Get employees filtered by department and/or position
+const getFilteredEmployees = async (req, res) => {
+    try {
+        const { departmentId, positionId } = req.query;
+        
+        // Build where clause based on provided filters
+        const whereClause = {};
+        if (departmentId) whereClause.departmentId = parseInt(departmentId);
+        if (positionId) whereClause.positionId = parseInt(positionId);
+
+        const employees = await prisma.employee.findMany({
+            where: whereClause,
+            include: {
+                department: true,
+                position: true,
+                trainings: {
+                    include: {
+                        training: true
+                    }
+                },
+                medicals: {
+                    include: {
+                        medical: true
+                    }
+                }
+            }
+        });
+
+        res.status(200).json({ success: true, data: employees });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to fetch filtered employees', error: error.message });
+    }
+};
+
+const searchEmployees = async (req, res) => {
+    try {
+        const { query } = req.query;
+        const employees = await prisma.employee.findMany({
+            where: {
+                OR: [
+                    { firstName: { contains: query, mode: 'insensitive' } },
+                    { lastName: { contains: query, mode: 'insensitive' } },
+                ]
+            },
+            include: {
+                department: true,
+                position: true,
+                trainings: {
+                    include: {
+                        training: true
+                    }
+                },
+                medicals: {
+                    include: {
+                        medical: true
+                    }
+                }
+            }
+        });
+        res.status(200).json({ success: true, data: employees });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to search employees', error: error.message });
+    }
+};
+
 module.exports = {
     createEmployee,
     getAllEmployees,
     getEmployeeById,
     updateEmployee,
     deleteEmployee,
+    getFilteredEmployees,
+	searchEmployees
 };

@@ -9,13 +9,15 @@ const createJob = async (req, res) => {
         jobNum,
         sbId,
         siteAddress,
-        //customerId,
-        //projectManagerId,
+        customerId,
+        projectManagerId,
         active,
         prevWage,
-        //driveTime,
-        //driveTimeTypeId,
+        driveTime,
         } = req.body;
+
+        // Convert driveTime to uppercase if it exists
+        const formattedDriveTime = driveTime ? driveTime.toUpperCase() : undefined;
 
         const newJob = await prisma.job.create({
         data: {
@@ -23,12 +25,11 @@ const createJob = async (req, res) => {
             jobNum,
             sbId,
             siteAddress,
-            //customerId,
-            //projectManagerId,
+            customerId,
+            projectManagerId,
             active,
             prevWage,
-            //driveTime,
-            //driveTimeTypeId,
+            driveTime: formattedDriveTime,
         },
         });
 
@@ -46,7 +47,6 @@ const getAllJobs = async (req, res) => {
             include: {
                 customerName: true,
                 projectManager: true,
-                driveTimeType: true,
             }
         });
         res.status(200).json({ success: true, data: jobs });
@@ -65,7 +65,6 @@ const getJobById = async (req, res) => {
             include: {
                 customerName: true,
                 projectManager: true,
-                driveTimeType: true,
             }
         });
 
@@ -106,14 +105,17 @@ const updateJob = async (req, res) => {
             'active',
             'complete',
             'prevWage',
-            'driveTime',
-            'driveTimeTypeId',
         ];
 
         for (const field of allowedFields) {
         if (req.body[field] !== undefined) {
             updateData[field] = req.body[field];
         }
+        }
+        
+        // Handle driveTime enum separately
+        if (req.body.driveTime !== undefined) {
+            updateData.driveTime = req.body.driveTime.toUpperCase();
         }
 
         const updatedJob = await prisma.job.update({
@@ -122,7 +124,6 @@ const updateJob = async (req, res) => {
         include: {
             customerName: true,
             projectManager: true,
-            driveTimeType: true,
         },
         });
 
@@ -161,10 +162,70 @@ const deleteJob = async (req, res) => {
     }
 };
 
+// Get jobs with filters
+const getFilteredJobs = async (req, res) => {
+    try {
+        const { jobNum, projectManagerId, customerId, active, driveTime, prevWage } = req.query;
+        
+        // Build where clause based on provided filters
+        const whereClause = {};
+        
+        if (jobNum) whereClause.jobNum = { contains: jobNum };
+        if (projectManagerId) whereClause.projectManagerId = parseInt(projectManagerId);
+        if (customerId) whereClause.customerId = parseInt(customerId);
+        if (active !== undefined) whereClause.active = active === 'true';
+        if (driveTime) whereClause.driveTime = driveTime.toUpperCase();
+        if (prevWage !== undefined) whereClause.prevWage = prevWage === 'true';
+
+        const jobs = await prisma.job.findMany({
+            where: whereClause,
+            include: {
+                customerName: true,
+                projectManager: true,
+            }
+        });
+
+        res.status(200).json({ success: true, data: jobs });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch filtered jobs', 
+            error: error.message 
+        });
+    }
+};
+// Search jobs
+const searchJobs = async (req, res) => {
+    try {
+        const { query } = req.query;
+        const jobs = await prisma.job.findMany({
+            where: {
+                OR: [
+                    { jobName: { contains: query, mode: 'insensitive' } },
+                    { jobNum: { contains: query, mode: 'insensitive' } },
+                    { sbId: { contains: query, mode: 'insensitive' } },
+                    { siteAddress: { contains: query, mode: 'insensitive' } }
+                ]
+            },
+            include: {
+                customerName: true,
+                projectManager: true
+            }
+        });
+        res.status(200).json({ success: true, data: jobs });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to search jobs', error: error.message });
+    }
+};
+
 module.exports = {
     createJob,
     getAllJobs,
     getJobById,
     updateJob,
     deleteJob,
+    getFilteredJobs,
+	searchJobs
 };

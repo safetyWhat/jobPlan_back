@@ -84,6 +84,23 @@ const deleteCustomer = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to delete customer', error: error.message });
     }
 };
+// Search for customers by name
+const searchCustomers = async (req, res) => {
+    try {
+        const { query } = req.query;
+        const customers = await prisma.customer.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                ]
+            }
+        });
+        res.status(200).json({ success: true, data: customers });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to search customers', error: error.message });
+    }
+};
 
 module.exports = {
     createCustomer,
@@ -91,4 +108,5 @@ module.exports = {
     getCustomerById,
     updateCustomer,
     deleteCustomer,
+	searchCustomers,
 };
