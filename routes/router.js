@@ -5,6 +5,7 @@ const { createDepartment, getAllDepartments, getDepartmentById, updateDepartment
 const { createCustomer, getAllCustomers, getCustomerById, updateCustomer, deleteCustomer, searchCustomers } = require('../controllers/customerController');
 const { createJob, getAllJobs, getJobById, updateJob, deleteJob, getFilteredJobs, searchJobs } = require('../controllers/jobController');
 const { createShift, getAllShifts, getShiftById, updateShift, deleteShift } = require('../controllers/shiftController');
+const { createScheduledJob, getScheduledJobs, updateScheduledJob,  deleteScheduledJob } = require('../controllers/scheduleController');
 const router = express.Router();
 
 // Define routes for employee operations
@@ -53,5 +54,11 @@ router.get('/shifts', getAllShifts);
 router.get('/shifts/:id', getShiftById);
 router.put('/shifts/:id', updateShift);
 router.delete('/shifts/:id', deleteShift);
+
+// Define routes for scheduled job operations
+router.post('/scheduled-jobs', createScheduledJob);
+router.get('/scheduled-jobs', getScheduledJobs);
+router.put('/scheduled-jobs/:id', updateScheduledJob);
+router.delete('/scheduled-jobs/:id', deleteScheduledJob);
 
 module.exports = router;

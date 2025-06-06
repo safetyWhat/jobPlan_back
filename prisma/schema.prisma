@@ -5,146 +5,171 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Employee {
-  id           Int                @id @default(autoincrement())
-  firstName    String
-  lastName     String
-  active       Boolean            @default(true)
-  uapId        String?
-  sbId         String?            @unique
-  phone        String             @unique
-  email        String?            @unique
-  department   Department?        @relation(fields: [departmentId], references: [id])
-  departmentId Int?
-  position     Position?          @relation(fields: [positionId], references: [id])
-  positionId   Int?
-  hiredAt      DateTime?
-  wage         Float?
-  trainings    EmployeeTraining[]
-  medicals     EmployeeMedical[]
-  shifts       Shift[]
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  Job          Job[]
+    id           Int                @id @default(autoincrement())
+    firstName    String
+    lastName     String
+    active       Boolean            @default(true)
+    uapId        String?
+    sbId         String?            @unique
+    phone        String             @unique
+    email        String?            @unique
+    department   Department?        @relation(fields: [departmentId], references: [id])
+    departmentId Int?
+    position     Position?          @relation(fields: [positionId], references: [id])
+    positionId   Int?
+    hiredAt      DateTime?
+    wage         Float?
+    trainings    EmployeeTraining[]
+    medicals     EmployeeMedical[]
+    shifts       Shift[]
+    createdAt    DateTime           @default(now())
+    updatedAt    DateTime           @updatedAt
+    Job          Job[]
 }
 
 model Department {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Employee  Employee[]
+    id        Int        @id @default(autoincrement())
+    name      String     @unique
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    Employee  Employee[]
 }
 
 model Position {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Employee  Employee[]
+    id        Int        @id @default(autoincrement())
+    name      String     @unique
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    Employee  Employee[]
 }
 
 model Training {
-  id          Int                @id @default(autoincrement())
-  name        String
-  description String?
-  validity    Int? // Duration in months (optional)
-  employees   EmployeeTraining[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+    id          Int                @id @default(autoincrement())
+    name        String
+    description String?
+    validity    Int? // Duration in months (optional)
+    employees   EmployeeTraining[]
+    createdAt   DateTime           @default(now())
+    updatedAt   DateTime           @updatedAt
 }
 
 model EmployeeTraining {
-  id          Int       @id @default(autoincrement())
-  employee    Employee  @relation(fields: [employeeId], references: [id])
-  employeeId  Int
-  training    Training  @relation(fields: [trainingId], references: [id])
-  trainingId  Int
-  completedAt DateTime
-  expiresAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+    id          Int       @id @default(autoincrement())
+    employee    Employee  @relation(fields: [employeeId], references: [id])
+    employeeId  Int
+    training    Training  @relation(fields: [trainingId], references: [id])
+    trainingId  Int
+    completedAt DateTime
+    expiresAt   DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
-  @@unique([employeeId, trainingId, completedAt])
+    @@unique([employeeId, trainingId, completedAt])
 }
 
 model Medical {
-  id          Int               @id @default(autoincrement())
-  name        String            @unique
-  description String?
-  validity    Int? // Duration in months (optional)
-  employees   EmployeeMedical[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+    id          Int               @id @default(autoincrement())
+    name        String            @unique
+    description String?
+    validity    Int? // Duration in months (optional)
+    employees   EmployeeMedical[]
+    createdAt   DateTime          @default(now())
+    updatedAt   DateTime          @updatedAt
 }
 
 model EmployeeMedical {
-  id          Int       @id @default(autoincrement())
-  employee    Employee  @relation(fields: [employeeId], references: [id])
-  employeeId  Int
-  medical     Medical   @relation(fields: [medicalId], references: [id])
-  medicalId   Int
-  completedAt DateTime
-  expiresAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+    id          Int       @id @default(autoincrement())
+    employee    Employee  @relation(fields: [employeeId], references: [id])
+    employeeId  Int
+    medical     Medical   @relation(fields: [medicalId], references: [id])
+    medicalId   Int
+    completedAt DateTime
+    expiresAt   DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
-  @@unique([employeeId, medicalId, completedAt])
+    @@unique([employeeId, medicalId, completedAt])
 }
 
 model Shift {
-  id         Int      @id @default(autoincrement())
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  employeeId Int
-  shiftDate  DateTime @db.Date
-  jobNum     String
-  comment    String?
-  hours      Float?
-  sbJobId    String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+    id         Int      @id @default(autoincrement())
+    employee   Employee @relation(fields: [employeeId], references: [id])
+    employeeId Int
+    shiftDate  DateTime @db.Date
+    jobNum     String
+    comment    String?
+    hours      Float?
+    sbJobId    String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 }
 
 enum DriveTime {
-  NONE
-  STANDARD
-  PLUS
+    NONE
+    STANDARD
+    PLUS
 }
 
 model Job {
-  id               Int        @id @default(autoincrement())
-  jobName          String
-  jobNum           String?    @unique
-  sbId             String?    @unique
-  siteAddress      String?
-  customerName     Customer?  @relation(fields: [customerId], references: [id])
-  customerId       Int?
-  projectManager   Employee?  @relation(fields: [projectManagerId], references: [id])
-  projectManagerId Int?
-  active           Boolean    @default(true)
-  complete         Boolean    @default(false)
-  prevWage         Boolean    @default(false)
-  driveTime        DriveTime? @default(NONE)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+    id               Int            @id @default(autoincrement())
+    jobName          String
+    jobNum           String?        @unique
+    sbId             String?        @unique
+    siteAddress      String?
+    customerName     Customer?      @relation(fields: [customerId], references: [id])
+    customerId       Int?
+    projectManager   Employee?      @relation(fields: [projectManagerId], references: [id])
+    projectManagerId Int?
+    active           Boolean        @default(true)
+    complete         Boolean        @default(false)
+    prevWage         Boolean        @default(false)
+    driveTime        DriveTime?     @default(NONE)
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime       @updatedAt
+    ScheduledJob     ScheduledJob[]
 }
 
 model Customer {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  address   String
-  phone     String?
-  fax       String?
-  email     String?
-  jobs      Job[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    address   String
+    phone     String?
+    fax       String?
+    email     String?
+    jobs      Job[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model ScheduledJob {
+    id             Int             @id @default(autoincrement())
+    job            Job             @relation(fields: [jobId], references: [id])
+    jobId          Int
+    scheduledDates ScheduledDate[]
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
+}
+
+model ScheduledDate {
+    id             Int          @id @default(autoincrement())
+    scheduledJob   ScheduledJob @relation(fields: [scheduledJobId], references: [id])
+    scheduledJobId Int
+    date           DateTime     @db.Date
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Add a unique constraint to prevent duplicate entries for the same job and date
+    @@unique([scheduledJobId, date])
+    // Add an index on the date column for efficient querying
+    @@index([date])
 }

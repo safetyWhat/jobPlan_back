@@ -199,6 +199,7 @@ const getFilteredJobs = async (req, res) => {
 const searchJobs = async (req, res) => {
     try {
         const { query } = req.query;
+		console.log('Search query:', query);
         const jobs = await prisma.job.findMany({
             where: {
                 OR: [
