@@ -159,14 +159,40 @@ model ScheduledJob {
     updatedAt      DateTime        @updatedAt
 }
 
-model ScheduledDate {
-    id             Int          @id @default(autoincrement())
-    scheduledJob   ScheduledJob @relation(fields: [scheduledJobId], references: [id])
-    scheduledJobId Int
-    date           DateTime     @db.Date
+enum OperatorType {
+    NONE
+    FULL
+    BOBCAT
+    DOZER
+}
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model OperatorCount {
+    id              Int           @id @default(autoincrement())
+    type            OperatorType  @default(NONE)
+    count           Int?
+    scheduledDate   ScheduledDate @relation(fields: [scheduledDateId], references: [id])
+    scheduledDateId Int
+    createdAt       DateTime      @default(now())
+    updatedAt       DateTime      @updatedAt
+}
+
+enum OtherIdentifier {
+    NONE
+    TIME_AND_MATERIALS
+    TEN_DAY
+    GRINDING
+}
+
+model ScheduledDate {
+    id              Int               @id @default(autoincrement())
+    scheduledJob    ScheduledJob      @relation(fields: [scheduledJobId], references: [id])
+    scheduledJobId  Int
+    date            DateTime          @db.Date
+    crewSize        Int?
+    operator        OperatorCount[]
+    otherIdentifier OtherIdentifier[] @default([NONE])
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
 
     // Add a unique constraint to prevent duplicate entries for the same job and date
     @@unique([scheduledJobId, date])
