@@ -5,7 +5,61 @@ const prisma = new PrismaClient();
 const createScheduledJob = async (req, res) => {
     try {
         const { jobId, dates } = req.body;
-        const sortedDates = dates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        
+        // Check if job is already scheduled
+        const existingScheduledJob = await prisma.scheduledJob.findFirst({
+            where: { jobId: parseInt(jobId) },
+            include: {
+                scheduledDates: {
+                    include: {
+                        operator: true
+                    }
+                }
+            }
+        });
+        
+        // If job is already scheduled, add new dates to it
+        if (existingScheduledJob) {
+            // Use the same logic as updateScheduledJob but without deleting existing dates
+            const sortedDates = dates.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            
+            // Add new dates with their operators
+            const updatedScheduledJob = await prisma.scheduledJob.update({
+                where: { id: existingScheduledJob.id },
+                data: {
+                    scheduledDates: {
+                        create: sortedDates.map((date) => ({
+                            date: new Date(date.date),
+                            crewSize: date.crewSize || null,
+                            otherIdentifier: date.otherIdentifier || ['NONE'],
+                            operator: {
+                                create: date.operator ? {
+                                    type: date.operator.type || 'NONE',
+                                    count: date.operator.count || null
+                                } : undefined
+                            }
+                        })),
+                    },
+                },
+                include: {
+                    job: true,
+                    scheduledDates: {
+                        include: {
+                            operator: true
+                        }
+                    },
+                },
+            });
+            
+            return res.status(200).json({ 
+                success: true, 
+                data: updatedScheduledJob, 
+                message: 'Added dates to existing scheduled job'
+            });
+        }
+        
+        // Original logic for creating a new scheduled job
+        const sortedDates = dates.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         const scheduledJob = await prisma.scheduledJob.create({
             data: {
@@ -142,30 +196,14 @@ const deleteScheduledJob = async (req, res) => {
         const { id } = req.params;
 
         const existingJob = await prisma.scheduledJob.findUnique({
-            where: { id: parseInt(id) },
-            include: {
-                scheduledDates: {
-                    include: {
-                        operator: true
-                    }
-                }
-            }
+            where: { id: parseInt(id) }
         });
 
         if (!existingJob) {
             return res.status(404).json({ success: false, message: 'Scheduled job not found' });
         }
 
-        // Delete operators first
-        for (const date of existingJob.scheduledDates) {
-            if (date.operator) {
-                await prisma.operatorCount.deleteMany({
-                    where: { scheduledDateId: date.id }
-                });
-            }
-        }
-
-        // Then delete the scheduled job (this will cascade delete scheduledDates)
+        // Prisma will handle cascade deletes for scheduledDates and operators
         await prisma.scheduledJob.delete({
             where: { id: parseInt(id) },
         });

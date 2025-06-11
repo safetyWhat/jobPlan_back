@@ -170,7 +170,7 @@ model OperatorCount {
     id              Int           @id @default(autoincrement())
     type            OperatorType  @default(NONE)
     count           Int?
-    scheduledDate   ScheduledDate @relation(fields: [scheduledDateId], references: [id])
+    scheduledDate   ScheduledDate @relation(fields: [scheduledDateId], references: [id], onDelete: Cascade)
     scheduledDateId Int
     createdAt       DateTime      @default(now())
     updatedAt       DateTime      @updatedAt
@@ -185,7 +185,7 @@ enum OtherIdentifier {
 
 model ScheduledDate {
     id              Int               @id @default(autoincrement())
-    scheduledJob    ScheduledJob      @relation(fields: [scheduledJobId], references: [id])
+    scheduledJob    ScheduledJob      @relation(fields: [scheduledJobId], references: [id], onDelete: Cascade)
     scheduledJobId  Int
     date            DateTime          @db.Date
     crewSize        Int?
@@ -194,8 +194,6 @@ model ScheduledDate {
     createdAt       DateTime          @default(now())
     updatedAt       DateTime          @updatedAt
 
-    // Add a unique constraint to prevent duplicate entries for the same job and date
     @@unique([scheduledJobId, date])
-    // Add an index on the date column for efficient querying
     @@index([date])
 }
