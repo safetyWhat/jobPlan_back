@@ -33,10 +33,10 @@ const createScheduledJob = async (req, res) => {
                             crewSize: date.crewSize || null,
                             otherIdentifier: date.otherIdentifier || ['NONE'],
                             operator: {
-                                create: date.operator ? {
-                                    type: date.operator.type || 'NONE',
-                                    count: date.operator.count || null
-                                } : undefined
+                                create: date.operator.map(op => ({
+									type: op.type || 'NONE',
+									count: op.count || null
+								})) // Create operator entries for each operator
                             }
                         })),
                     },
@@ -70,11 +70,11 @@ const createScheduledJob = async (req, res) => {
                         crewSize: date.crewSize || null,
                         otherIdentifier: date.otherIdentifier || ['NONE'],
                         operator: {
-                            create: date.operator ? {
-                                type: date.operator.type || 'NONE',
-                                count: date.operator.count || null
-                            } : undefined
-                        }
+							create: date.operator.map(op => ({
+								type: op.type || 'NONE',
+								count: op.count || null
+							})) // Create operator entries for each operator
+						}
                     })),
                 },
             },
